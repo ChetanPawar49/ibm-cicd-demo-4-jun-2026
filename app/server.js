@@ -17,7 +17,8 @@ app.get('/', (req, res) => {
 });
 
 app.get('/health', (req, res) => {
-  console.log(req);
+  // console.log(req);
+  console.log("New Changes Here.");
   res.json({ status: 'UP' });
 });
 
