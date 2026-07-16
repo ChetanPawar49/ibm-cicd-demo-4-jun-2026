@@ -56,8 +56,12 @@ pipeline {
                     // bat "echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin"
                     bat '''
                     @echo off
-                    echo %DOCKERHUB_PASSWORD% | docker login -u %DOCKERHUB_USERNAME% --password-stdin
+                    powershell -Command "$env:DOCKERHUB_CREDENTIALS_PSW | docker login -u $env:DOCKERHUB_CREDENTIALS_USR --password-stdin"
                     '''
+                    // bat '''
+                    // @echo off
+                    // echo %DOCKERHUB_PASSWORD% | docker login -u %DOCKERHUB_USERNAME% --password-stdin
+                    // '''
                     // bat "docker login"
                     bat "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
                     bat "docker push ${IMAGE_NAME}:latest"
@@ -71,8 +75,8 @@ pipeline {
                     // Mirrors PUSH_TO_DOCKERHUB: if we didn't push, the image only
                     // exists locally, so tell Kubernetes to never attempt a registry
                     // pull -- just use whatever's already on the node.
-                    // def pullPolicy = params.PUSH_TO_DOCKERHUB ? 'IfNotPresent' : 'Never'
-                    def pullPolicy = 'IfNotPresent'
+                    def pullPolicy = params.PUSH_TO_DOCKERHUB ? 'IfNotPresent' : 'Never'
+                    // def pullPolicy = 'IfNotPresent'
                     writeFile file: 'pull-policy-patch.yaml', text: """spec:
   template:
     spec:
@@ -82,8 +86,8 @@ pipeline {
 """
                 }
                 bat "kubectl patch deployment ibm-cicd-demo --patch-file=pull-policy-patch.yaml"
-                // bat "kubectl set image deployment/ibm-cicd-demo ibm-cicd-demo=${IMAGE_NAME}:${IMAGE_TAG} --record"
-                bat "kubectl set image deployment/ibm-cicd-demo ibm-cicd-demo=${IMAGE_NAME}:${IMAGE_TAG}"
+                bat "kubectl set image deployment/ibm-cicd-demo ibm-cicd-demo=${IMAGE_NAME}:${IMAGE_TAG} --record"
+                // bat "kubectl set image deployment/ibm-cicd-demo ibm-cicd-demo=${IMAGE_NAME}:${IMAGE_TAG}"
                 bat "kubectl rollout status deployment/ibm-cicd-demo --timeout=90s"
             }
         }
