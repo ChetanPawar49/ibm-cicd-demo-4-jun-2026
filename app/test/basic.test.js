@@ -20,7 +20,7 @@ describe('Simple CI/CD Demo App', () => {
 
   it('GET /health returns UP status', async () => {
     const res = await request(app).get('/health');
-    expect(res.body.status).toBe('DOWN');
+    expect(res.body.status).toBe('UP');
   });
 
   it('GET /health returns status 200', async () => {

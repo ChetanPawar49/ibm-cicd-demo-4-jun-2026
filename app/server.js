@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
 app.get('/health', (req, res) => {
   // console.log(req);
   console.log("New Changes Here.");
-  res.json({ status: 'DOWN' });
+  res.json({ status: 'UP' });
 });
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
